@@ -2,6 +2,8 @@
 name = "log_once"
 version = "0.1.0"
 edition = "2021"
+description = "log something only once"
+license = "MIT"
 
 [dependencies]
 log = "0.4"

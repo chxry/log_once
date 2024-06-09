@@ -1,15 +1,20 @@
+#![feature(const_collections_with_hasher)]
+use std::collections::HashSet;
+use std::any::TypeId;
+
 pub use log;
-pub static mut H: Vec<u64> = vec![];
+pub static mut H: HashSet<[u8; ::std::mem::size_of::<TypeId>()]> =
+  HashSet::with_hasher(unsafe { std::mem::zeroed() });
 
 #[macro_export]
 macro_rules! log_once {
   ($lvl:expr, $($arg:tt)+) => (
     unsafe {
       struct T;
-      let id = ::std::mem::transmute::<_, u64>(::std::any::TypeId::of::<T>());
+      let id = ::std::mem::transmute::<_, [u8; ::std::mem::size_of::<TypeId>()]>(::std::any::TypeId::of::<T>());
       if !$crate::H.contains(&id) {
         $crate::log::log!($lvl,$($arg)+);
-        $crate::H.push(id);
+        $crate::H.insert(id);
       }
     }
   )

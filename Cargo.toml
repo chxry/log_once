@@ -9,4 +9,4 @@ license = "MIT"
 log = "0.4"
 
 [dev-dependencies]
-ezlogger = "0.1"
+env_logger = "0.11"

@@ -1,15 +1,13 @@
 pub use log;
-pub static mut H: Vec<u64> = vec![];
 
 #[macro_export]
 macro_rules! log_once {
   ($lvl:expr, $($arg:tt)+) => (
     unsafe {
-      struct T;
-      let id = ::std::mem::transmute::<_, u64>(::std::any::TypeId::of::<T>());
-      if !$crate::H.contains(&id) {
-        $crate::log::log!($lvl,$($arg)+);
-        $crate::H.push(id);
+      static mut _LOG_FLAG: bool = false;
+      if !_LOG_FLAG {
+        $crate::log::log!($lvl, $($arg)+);
+        _LOG_FLAG = true;
       }
     }
   )
@@ -42,7 +40,10 @@ macro_rules! trace_once {
 
 #[test]
 fn it_works() {
-  ezlogger::init(log::LevelFilter::Info).unwrap();
+  env_logger::builder()
+    .is_test(true)
+    .filter_level(log::LevelFilter::Info)
+    .init();
   info_once!("real");
   for i in 0..3 {
     info_once!("test {}", i);
